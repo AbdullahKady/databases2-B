@@ -13,4 +13,5 @@ This will generate 2 .csv files:
 > All the constraints preserved (no duplicate players per match, and match IDs are referenced successfully).
 
 ## Next steps: 
-There is a **COPY** command in PostgreSQL to import records into a table from a CSV file, which is going to be the next step inshaAllah  
+~~There is a **COPY** command in PostgreSQL to import records into a table from a CSV file, which is going to be the next step inshaAllah~~
+You need to populate the output_part_F with explaination for your part that you already explained while working with smaller number of records, and add as well your part's output file.
