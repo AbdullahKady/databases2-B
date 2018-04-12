@@ -438,7 +438,7 @@ estimated cost = 65698.95
 ++++++++++++++++++++++
 D.Q5
 No the plan and the cost did not change. 
-That is beacuase a cartesian product does not benefit from any indices and after than a selection is made.
+That is beacuase a cartesian product does not benefit from any indices and after that a selection is made.
 
 =======================================================================================================
 
