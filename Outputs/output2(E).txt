@@ -140,7 +140,9 @@ B4:
 "Total Cost": 946150.17
 
 B5: 
-INSERT HARY HERE
+The execution plan and cost didn't change after adding the index. 
+This is because the query requires checking all characters in the attribute 'name' to check if it matches the criteria at any position in the string.
+
 
 =============================================================
 =============================================================
@@ -296,7 +298,8 @@ D2:
 ]
 
 D3:
-INSERT HARY HERE
+No the plan and estimated cost did not change.
+This is because the there is only an index in one of the tables.
 
 D4:
 [
@@ -351,7 +354,9 @@ D4:
 ]
 
 D5:
-INSERT HARY HERE
+No the plan and the cost did not change. 
+That is beacuase a cartesian product does not benefit from any indices and after than a selection is made.
+
 
 ===================================================
 ===================================================
@@ -411,7 +416,7 @@ E1:
 Join type is a "Hash Join", and the query's total cost is 1344781.8
 
 
-D2:
+E2:
 
 [
   {
@@ -457,9 +462,10 @@ D2:
   }
 ]
 
-Join algorithim used is the Merge join, and the cost of the query is 1826832.16
+Join algorithim used is the Merge join.
+And the cost of the query is 1826832.16
 
-D3:
+E3:
 [
   {
     "Plan": {

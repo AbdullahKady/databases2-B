@@ -1,0 +1,677 @@
+A1:
+  "Plan": {
+    "Filter": "(\"position\" = 1)",
+    "Startup Cost": 0,
+    "Node Type": "Seq Scan",
+    "Plan Rows": 2730,
+    "Relation Name": "played_in",
+    "Alias": "played_in",
+    "Parallel Aware": false,
+    "Plan Width": 27,
+    "Total Cost": 1601
+  }
+++++++++++++++++++++++  
+A2: 
+  1601
+++++++++++++++++++++++
+A3:
+  [
+  {
+    "Plan": {
+      "Startup Cost": 53.45,
+      "Plans": [
+        {
+          "Startup Cost": 0,
+          "Plan Width": 0,
+          "Node Type": "Bitmap Index Scan",
+          "Index Cond": "(\"position\" = 1)",
+          "Plan Rows": 2730,
+          "Parallel Aware": false,
+          "Parent Relationship": "Outer",
+          "Total Cost": 52.76,
+          "Index Name": "position_indx"
+        }
+      ],
+      "Node Type": "Bitmap Heap Scan",
+      "Plan Rows": 2730,
+      "Relation Name": "played_in",
+      "Alias": "played_in",
+      "Parallel Aware": false,
+      "Recheck Cond": "(\"position\" = 1)",
+      "Plan Width": 27,
+      "Total Cost": 951.57
+    }
+  }
+]
+++++++++++++++++++++++
+A4: 
+  951.57
+++++++++++++++++++++++
+A5: 
+  It did change, it decreased (about 40% improvement) , the reason being that the query when ran using the position_indx (Bitmap one, which is appropriate for the select one value query),
+   the cost of finding (WHERE position = 1), using the bitmap index was only 52.76.
+
+=======================================================================================================
+  
+B.Q1
+[
+  {
+    "Plan": {
+      "Filter": "((played_in.name)::text ~~ '%pele%'::text)",
+      "Startup Cost": 0,
+      "Plan Width": 27,
+      "Node Type": "Seq Scan",
+      "Plan Rows": 414,
+      "Relation Name": "played_in",
+      "Alias": "played_in",
+      "Parallel Aware": false,
+      "Output": [
+        "mid",
+        "name",
+        "year",
+        "\"position\""
+      ],
+      "Total Cost": 1169,
+      "Schema": "public"
+    }
+  }
+]
+++++++++++++++++++++++
+B.Q2
+estimated cost = 1169
+++++++++++++++++++++++
+B.Q3
+[
+  {
+    "Plan": {
+      "Filter": "((played_in.name)::text ~~ '%pele%'::text)",
+      "Startup Cost": 0,
+      "Plan Width": 27,
+      "Node Type": "Seq Scan",
+      "Plan Rows": 414,
+      "Relation Name": "played_in",
+      "Alias": "played_in",
+      "Parallel Aware": false,
+      "Output": [
+        "mid",
+        "name",
+        "year",
+        "\"position\""
+      ],
+      "Total Cost": 1169,
+      "Schema": "public"
+    }
+  }
+]
+++++++++++++++++++++++
+B.Q4
+estimated cost = 1169
+++++++++++++++++++++++
+B.Q5
+The execution plan and cost didn't change after adding the index. 
+This is because the query requires checking all characters in the attribute 'name' to check if it matches the criteria at any position in the string.
+
+=======================================================================================================
+
+C.Q1
+[
+  {
+    "Plan": {
+      "Filter": "((cup_matches.rating * '3'::double precision) > '20'::double precision)",
+      "Startup Cost": 0,
+      "Plan Width": 29,
+      "Node Type": "Seq Scan",
+      "Plan Rows": 893,
+      "Relation Name": "cup_matches",
+      "Alias": "cup_matches",
+      "Parallel Aware": false,
+      "Output": [
+        "mid",
+        "round",
+        "year",
+        "num_ratings",
+        "rating"
+      ],
+      "Total Cost": 61.2,
+      "Schema": "public"
+    }
+  }
+]
+++++++++++++++++++++++
+C.Q2
+estimated cost = 61.2
+++++++++++++++++++++++
+C.Q3
+[
+  {
+    "Plan": {
+      "Filter": "((cup_matches.rating * '3'::double precision) > '20'::double precision)",
+      "Startup Cost": 0,
+      "Plan Width": 29,
+      "Node Type": "Seq Scan",
+      "Plan Rows": 893,
+      "Relation Name": "cup_matches",
+      "Alias": "cup_matches",
+      "Parallel Aware": false,
+      "Output": [
+        "mid",
+        "round",
+        "year",
+        "num_ratings",
+        "rating"
+      ],
+      "Total Cost": 61.2,
+      "Schema": "public"
+    }
+  }
+]
+++++++++++++++++++++++
+C.Q4
+estimated cost = 61.2
+++++++++++++++++++++++
+C.Q5
+The execution plan and estimated cost did not change. That is because there are a lot of duplicate values in the column 'rating'. So a sequence scan here is even more efficient.
+
+=======================================================================================================
+
+D.Q1
+[
+  {
+    "Plan": {
+      "Inner Unique": false,
+      "Startup Cost": 81.3,
+      "Plans": [
+        {
+          "Startup Cost": 0,
+          "Plan Width": 27,
+          "Node Type": "Seq Scan",
+          "Plan Rows": 58960,
+          "Relation Name": "played_in",
+          "Alias": "played_in",
+          "Parallel Aware": false,
+          "Output": [
+            "played_in.mid",
+            "played_in.name",
+            "played_in.year",
+            "played_in.\"position\""
+          ],
+          "Parent Relationship": "Outer",
+          "Total Cost": 1021.6,
+          "Schema": "public"
+        },
+        {
+          "Startup Cost": 47.8,
+          "Plans": [
+            {
+              "Startup Cost": 0,
+              "Plan Width": 29,
+              "Node Type": "Seq Scan",
+              "Plan Rows": 2680,
+              "Relation Name": "cup_matches",
+              "Alias": "cup_matches",
+              "Parallel Aware": false,
+              "Output": [
+                "cup_matches.mid",
+                "cup_matches.round",
+                "cup_matches.year",
+                "cup_matches.num_ratings",
+                "cup_matches.rating"
+              ],
+              "Parent Relationship": "Outer",
+              "Total Cost": 47.8,
+              "Schema": "public"
+            }
+          ],
+          "Node Type": "Hash",
+          "Plan Rows": 2680,
+          "Parallel Aware": false,
+          "Output": [
+            "cup_matches.mid",
+            "cup_matches.round",
+            "cup_matches.year",
+            "cup_matches.num_ratings",
+            "cup_matches.rating"
+          ],
+          "Parent Relationship": "Inner",
+          "Plan Width": 29,
+          "Total Cost": 47.8
+        }
+      ],
+      "Node Type": "Hash Join",
+      "Plan Rows": 5530985,
+      "Join Type": "Inner",
+      "Parallel Aware": false,
+      "Hash Cond": "(played_in.year = cup_matches.year)",
+      "Output": [
+        "cup_matches.mid",
+        "cup_matches.round",
+        "cup_matches.year",
+        "cup_matches.num_ratings",
+        "cup_matches.rating",
+        "played_in.mid",
+        "played_in.name",
+        "played_in.year",
+        "played_in.\"position\""
+      ],
+      "Plan Width": 56,
+      "Total Cost": 65698.95
+    }
+  }
+]
+
+the estimated cost = 65698.95
+++++++++++++++++++++++
+D.Q2:
+[
+  {
+    "Plan": {
+      "Inner Unique": false,
+      "Startup Cost": 81.3,
+      "Plans": [
+        {
+          "Startup Cost": 0,
+          "Plan Width": 27,
+          "Node Type": "Seq Scan",
+          "Plan Rows": 58960,
+          "Relation Name": "played_in",
+          "Alias": "played_in",
+          "Parallel Aware": false,
+          "Output": [
+            "played_in.mid",
+            "played_in.name",
+            "played_in.year",
+            "played_in.\"position\""
+          ],
+          "Parent Relationship": "Outer",
+          "Total Cost": 1021.6,
+          "Schema": "public"
+        },
+        {
+          "Startup Cost": 47.8,
+          "Plans": [
+            {
+              "Startup Cost": 0,
+              "Plan Width": 29,
+              "Node Type": "Seq Scan",
+              "Plan Rows": 2680,
+              "Relation Name": "cup_matches",
+              "Alias": "cup_matches",
+              "Parallel Aware": false,
+              "Output": [
+                "cup_matches.mid",
+                "cup_matches.round",
+                "cup_matches.year",
+                "cup_matches.num_ratings",
+                "cup_matches.rating"
+              ],
+              "Parent Relationship": "Outer",
+              "Total Cost": 47.8,
+              "Schema": "public"
+            }
+          ],
+          "Node Type": "Hash",
+          "Plan Rows": 2680,
+          "Parallel Aware": false,
+          "Output": [
+            "cup_matches.mid",
+            "cup_matches.round",
+            "cup_matches.year",
+            "cup_matches.num_ratings",
+            "cup_matches.rating"
+          ],
+          "Parent Relationship": "Inner",
+          "Plan Width": 29,
+          "Total Cost": 47.8
+        }
+      ],
+      "Node Type": "Hash Join",
+      "Plan Rows": 5530985,
+      "Join Type": "Inner",
+      "Parallel Aware": false,
+      "Hash Cond": "(played_in.year = cup_matches.year)",
+      "Output": [
+        "cup_matches.mid",
+        "cup_matches.round",
+        "cup_matches.year",
+        "cup_matches.num_ratings",
+        "cup_matches.rating",
+        "played_in.mid",
+        "played_in.name",
+        "played_in.year",
+        "played_in.\"position\""
+      ],
+      "Plan Width": 56,
+      "Total Cost": 65698.95
+    }
+  }
+]
+the estimated cost = 65698.95
+++++++++++++++++++++++
+D.Q3
+No the plan and estimated cost did not change, This is because the there is only an index in one of the tables.
+++++++++++++++++++++++
+D.Q4
+[
+  {
+    "Plan": {
+      "Inner Unique": false,
+      "Startup Cost": 81.3,
+      "Plans": [
+        {
+          "Startup Cost": 0,
+          "Plan Width": 27,
+          "Node Type": "Seq Scan",
+          "Plan Rows": 58960,
+          "Relation Name": "played_in",
+          "Alias": "played_in",
+          "Parallel Aware": false,
+          "Output": [
+            "played_in.mid",
+            "played_in.name",
+            "played_in.year",
+            "played_in.\"position\""
+          ],
+          "Parent Relationship": "Outer",
+          "Total Cost": 1021.6,
+          "Schema": "public"
+        },
+        {
+          "Startup Cost": 47.8,
+          "Plans": [
+            {
+              "Startup Cost": 0,
+              "Plan Width": 29,
+              "Node Type": "Seq Scan",
+              "Plan Rows": 2680,
+              "Relation Name": "cup_matches",
+              "Alias": "cup_matches",
+              "Parallel Aware": false,
+              "Output": [
+                "cup_matches.mid",
+                "cup_matches.round",
+                "cup_matches.year",
+                "cup_matches.num_ratings",
+                "cup_matches.rating"
+              ],
+              "Parent Relationship": "Outer",
+              "Total Cost": 47.8,
+              "Schema": "public"
+            }
+          ],
+          "Node Type": "Hash",
+          "Plan Rows": 2680,
+          "Parallel Aware": false,
+          "Output": [
+            "cup_matches.mid",
+            "cup_matches.round",
+            "cup_matches.year",
+            "cup_matches.num_ratings",
+            "cup_matches.rating"
+          ],
+          "Parent Relationship": "Inner",
+          "Plan Width": 29,
+          "Total Cost": 47.8
+        }
+      ],
+      "Node Type": "Hash Join",
+      "Plan Rows": 5530985,
+      "Join Type": "Inner",
+      "Parallel Aware": false,
+      "Hash Cond": "(played_in.year = cup_matches.year)",
+      "Output": [
+        "cup_matches.mid",
+        "cup_matches.round",
+        "cup_matches.year",
+        "cup_matches.num_ratings",
+        "cup_matches.rating",
+        "played_in.mid",
+        "played_in.name",
+        "played_in.year",
+        "played_in.\"position\""
+      ],
+      "Plan Width": 56,
+      "Total Cost": 65698.95
+    }
+  }
+]
+estimated cost = 65698.95
+++++++++++++++++++++++
+D.Q5
+No the plan and the cost did not change. 
+That is beacuase a cartesian product does not benefit from any indices and after than a selection is made.
+
+=======================================================================================================
+
+E.Q1
+[
+  {
+    "Plan": {
+      "Inner Unique": true,
+      "Startup Cost": 81.3,
+      "Plans": [
+        {
+          "Startup Cost": 0,
+          "Plan Width": 27,
+          "Node Type": "Seq Scan",
+          "Plan Rows": 58960,
+          "Relation Name": "played_in",
+          "Alias": "played_in",
+          "Parallel Aware": false,
+          "Output": [
+            "played_in.mid",
+            "played_in.name",
+            "played_in.year",
+            "played_in.\"position\""
+          ],
+          "Parent Relationship": "Outer",
+          "Total Cost": 1021.6,
+          "Schema": "public"
+        },
+        {
+          "Startup Cost": 47.8,
+          "Plans": [
+            {
+              "Startup Cost": 0,
+              "Plan Width": 29,
+              "Node Type": "Seq Scan",
+              "Plan Rows": 2680,
+              "Relation Name": "cup_matches",
+              "Alias": "cup_matches",
+              "Parallel Aware": false,
+              "Output": [
+                "cup_matches.mid",
+                "cup_matches.round",
+                "cup_matches.year",
+                "cup_matches.num_ratings",
+                "cup_matches.rating"
+              ],
+              "Parent Relationship": "Outer",
+              "Total Cost": 47.8,
+              "Schema": "public"
+            }
+          ],
+          "Node Type": "Hash",
+          "Plan Rows": 2680,
+          "Parallel Aware": false,
+          "Output": [
+            "cup_matches.mid",
+            "cup_matches.round",
+            "cup_matches.year",
+            "cup_matches.num_ratings",
+            "cup_matches.rating"
+          ],
+          "Parent Relationship": "Inner",
+          "Plan Width": 29,
+          "Total Cost": 47.8
+        }
+      ],
+      "Node Type": "Hash Join",
+      "Plan Rows": 58960,
+      "Join Type": "Inner",
+      "Parallel Aware": false,
+      "Hash Cond": "(played_in.mid = cup_matches.mid)",
+      "Output": [
+        "cup_matches.mid",
+        "cup_matches.round",
+        "cup_matches.year",
+        "cup_matches.num_ratings",
+        "cup_matches.rating",
+        "played_in.mid",
+        "played_in.name",
+        "played_in.year",
+        "played_in.\"position\""
+      ],
+      "Plan Width": 56,
+      "Total Cost": 1847.07
+    }
+  }
+]
+
+The estimated cost = 1847.07
+Type of join is Hash Join
+++++++++++++++++++++++
+E.Q2
+[
+  {
+    "Plan": {
+      "Inner Unique": false,
+      "Startup Cost": 0.7,
+      "Plans": [
+        {
+          "Startup Cost": 0.28,
+          "Scan Direction": "Forward",
+          "Plan Width": 29,
+          "Node Type": "Index Scan",
+          "Total Cost": 104.48,
+          "Plan Rows": 2680,
+          "Relation Name": "cup_matches",
+          "Alias": "cup_matches",
+          "Parallel Aware": false,
+          "Output": [
+            "cup_matches.mid",
+            "cup_matches.round",
+            "cup_matches.year",
+            "cup_matches.num_ratings",
+            "cup_matches.rating"
+          ],
+          "Parent Relationship": "Outer",
+          "Schema": "public",
+          "Index Name": "cup_matches_pkey"
+        },
+        {
+          "Startup Cost": 0.41,
+          "Scan Direction": "Forward",
+          "Plan Width": 27,
+          "Node Type": "Index Scan",
+          "Total Cost": 3049.5,
+          "Plan Rows": 58960,
+          "Relation Name": "played_in",
+          "Alias": "played_in",
+          "Parallel Aware": false,
+          "Output": [
+            "played_in.mid",
+            "played_in.name",
+            "played_in.year",
+            "played_in.\"position\""
+          ],
+          "Parent Relationship": "Inner",
+          "Schema": "public",
+          "Index Name": "played_in_pkey"
+        }
+      ],
+      "Node Type": "Merge Join",
+      "Plan Rows": 58960,
+      "Join Type": "Inner",
+      "Parallel Aware": false,
+      "Output": [
+        "cup_matches.mid",
+        "cup_matches.round",
+        "cup_matches.year",
+        "cup_matches.num_ratings",
+        "cup_matches.rating",
+        "played_in.mid",
+        "played_in.name",
+        "played_in.year",
+        "played_in.\"position\""
+      ],
+      "Plan Width": 56,
+      "Merge Cond": "(cup_matches.mid = played_in.mid)",
+      "Total Cost": 3897.68
+    }
+  }
+]
+
+estimated cost = 3897.68
+Type of join is Merge Join
+++++++++++++++++++++++
+E.Q3
+[
+  {
+    "Plan": {
+      "Inner Unique": false,
+      "Startup Cost": 0.41,
+      "Plans": [
+        {
+          "Startup Cost": 0,
+          "Plan Width": 29,
+          "Node Type": "Seq Scan",
+          "Plan Rows": 2680,
+          "Relation Name": "cup_matches",
+          "Alias": "cup_matches",
+          "Parallel Aware": false,
+          "Output": [
+            "cup_matches.mid",
+            "cup_matches.round",
+            "cup_matches.year",
+            "cup_matches.num_ratings",
+            "cup_matches.rating"
+          ],
+          "Parent Relationship": "Outer",
+          "Total Cost": 47.8,
+          "Schema": "public"
+        },
+        {
+          "Index Cond": "(played_in.mid = cup_matches.mid)",
+          "Startup Cost": 0.41,
+          "Scan Direction": "Forward",
+          "Plan Width": 27,
+          "Node Type": "Index Scan",
+          "Total Cost": 1.88,
+          "Plan Rows": 22,
+          "Relation Name": "played_in",
+          "Alias": "played_in",
+          "Parallel Aware": false,
+          "Output": [
+            "played_in.mid",
+            "played_in.name",
+            "played_in.year",
+            "played_in.\"position\""
+          ],
+          "Parent Relationship": "Inner",
+          "Schema": "public",
+          "Index Name": "played_in_pkey"
+        }
+      ],
+      "Node Type": "Nested Loop",
+      "Plan Rows": 58960,
+      "Join Type": "Inner",
+      "Parallel Aware": false,
+      "Output": [
+        "cup_matches.mid",
+        "cup_matches.round",
+        "cup_matches.year",
+        "cup_matches.num_ratings",
+        "cup_matches.rating",
+        "played_in.mid",
+        "played_in.name",
+        "played_in.year",
+        "played_in.\"position\""
+      ],
+      "Plan Width": 56,
+      "Total Cost": 5673.4
+    }
+  }
+]
+
+estimated cost = 5673.4
+Type of join is Nested Loop Join
