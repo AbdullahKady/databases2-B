@@ -154,18 +154,18 @@ C1:
       "Filter": "((rating * '3'::double precision) > '20'::double precision)",
       "Startup Cost": 0,
       "Node Type": "Seq Scan",
-      "Plan Rows": 119441,
+      "Plan Rows": 166667,
       "Relation Name": "cup_matches",
       "Alias": "cup_matches",
       "Parallel Aware": false,
       "Plan Width": 28,
-      "Total Cost": 47002.85
+      "Total Cost": 49128
     }
   }
 ]
 
 C2:
-"Total Cost": 47002.85
+"Total Cost": 49128
 
 C3:
 [
@@ -188,7 +188,8 @@ C4:
 "Total Cost": 49128
 
 C5: 
-INSERT HARY HERE
+The execution plan and estimated cost did not change. That is because there are a lot of duplicate values in the column 'rating'. So a sequence scan here is even more efficient.
+
 
 =============================================================
 =============================================================
